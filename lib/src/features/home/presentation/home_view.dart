@@ -18,7 +18,9 @@ import 'package:namma_wallet/src/features/home/presentation/widgets/ticket_card_
 import 'package:namma_wallet/src/features/travel/presentation/widgets/travel_ticket_card_widget.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  const HomeView({this.highlightTicketId, super.key});
+
+  final String? highlightTicketId;
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -28,18 +30,36 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   bool _isLoading = true;
   List<Ticket> _travelTickets = [];
   List<Ticket> _eventTickets = [];
+  String? _highlightTicketId;
+  Timer? _highlightTimer;
 
   late final IHapticService _hapticService;
   @override
   void initState() {
     super.initState();
     _hapticService = getIt<IHapticService>();
+    _highlightTicketId = widget.highlightTicketId;
+    if (_highlightTicketId != null) {
+      _startHighlightTimer();
+    }
     WidgetsBinding.instance.addObserver(this);
     unawaited(_loadTicketData());
   }
 
+  void _startHighlightTimer() {
+    _highlightTimer?.cancel();
+    _highlightTimer = Timer(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() {
+          _highlightTicketId = null;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _highlightTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -115,6 +135,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           child: TravelTicketCardWidget(
             ticket: ticket,
             onTicketDeleted: _loadTicketData,
+            isHighlighted: ticket.ticketId == _highlightTicketId,
           ),
         ),
       );
@@ -285,6 +306,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                               },
                               child: EventTicketCardWidget(
                                 ticket: eventTicket,
+                                isHighlighted:
+                                    eventTicket.ticketId == _highlightTicketId,
                               ),
                             );
                           },

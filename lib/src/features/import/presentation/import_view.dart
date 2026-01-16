@@ -37,9 +37,7 @@ class _ImportViewState extends State<ImportView> {
       _isScanning = true;
     });
 
-    getIt<IHapticService>().triggerHaptic(
-      HapticType.selection,
-    );
+    getIt<IHapticService>().triggerHaptic(HapticType.selection);
 
     try {
       // Use import service to handle QR code
@@ -48,16 +46,15 @@ class _ImportViewState extends State<ImportView> {
       if (!mounted) return;
 
       if (ticket != null) {
-        showSnackbar(
-          context,
-          'QR ticket imported successfully!',
-        );
+        showSnackbar(context, 'QR ticket imported successfully!');
+        if (mounted) {
+          context.goNamed(
+            AppRoute.home.name,
+            queryParameters: {'ticketId': ticket.ticketId},
+          );
+        }
       } else {
-        showSnackbar(
-          context,
-          'QR code format not supported',
-          isError: true,
-        );
+        showSnackbar(context, 'QR code format not supported', isError: true);
       }
     } finally {
       if (mounted) {
@@ -109,10 +106,7 @@ class _ImportViewState extends State<ImportView> {
 
         final platformFile = result.files.single;
         if (kIsWeb && platformFile.bytes != null) {
-          xFile = XFile.fromData(
-            platformFile.bytes!,
-            name: platformFile.name,
-          );
+          xFile = XFile.fromData(platformFile.bytes!, name: platformFile.name);
         } else if (platformFile.path != null) {
           xFile = XFile(platformFile.path!);
         } else {
@@ -129,9 +123,7 @@ class _ImportViewState extends State<ImportView> {
       }
 
       if (xFile != null) {
-        getIt<IHapticService>().triggerHaptic(
-          HapticType.selection,
-        );
+        getIt<IHapticService>().triggerHaptic(HapticType.selection);
 
         // Use import service to handle PDF
         final ticket = await _importService.importAndSavePDFFile(xFile);
@@ -140,6 +132,12 @@ class _ImportViewState extends State<ImportView> {
 
         if (ticket != null) {
           showSnackbar(context, 'PDF ticket imported successfully!');
+          if (mounted) {
+            context.goNamed(
+              AppRoute.home.name,
+              queryParameters: {'ticketId': ticket.ticketId},
+            );
+          }
         } else {
           showSnackbar(
             context,
@@ -174,9 +172,7 @@ class _ImportViewState extends State<ImportView> {
       _isPasting = true;
     });
 
-    getIt<IHapticService>().triggerHaptic(
-      HapticType.selection,
-    );
+    getIt<IHapticService>().triggerHaptic(HapticType.selection);
 
     try {
       final clipboardService = getIt<IClipboardService>();
@@ -187,13 +183,16 @@ class _ImportViewState extends State<ImportView> {
         if (!mounted) return;
 
         ClipboardResultHandler.showResultMessage(context, result);
+
+        if (result.ticket != null) {
+          context.goNamed(
+            AppRoute.home.name,
+            queryParameters: {'ticketId': result.ticket!.ticketId},
+          );
+        }
       } on Exception catch (e) {
         if (mounted) {
-          showSnackbar(
-            context,
-            'Failed to read clipboard',
-            isError: true,
-          );
+          showSnackbar(context, 'Failed to read clipboard', isError: true);
         }
         _logger.error('Clipboard read error: $e');
       }
@@ -277,9 +276,7 @@ class _ImportViewState extends State<ImportView> {
                                           size: 90,
                                           color: textColor.withAlpha(180),
                                         ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
+                                        const SizedBox(height: 5),
                                         Text(
                                           'Upload PDF Here',
                                           style: TextStyle(
@@ -294,9 +291,7 @@ class _ImportViewState extends State<ImportView> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 42,
-                      ),
+                      const SizedBox(height: 42),
                       SizedBox(
                         width: 141,
                         height: 42,

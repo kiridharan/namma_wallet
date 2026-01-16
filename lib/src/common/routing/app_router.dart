@@ -33,7 +33,10 @@ final router = GoRouter(
         GoRoute(
           path: AppRoute.home.path,
           name: AppRoute.home.name,
-          builder: (context, state) => const HomeView(),
+          builder: (context, state) {
+            final ticketId = state.uri.queryParameters['ticketId'];
+            return HomeView(highlightTicketId: ticketId);
+          },
         ),
         GoRoute(
           path: AppRoute.import.path,
@@ -58,9 +61,7 @@ final router = GoRouter(
       builder: (context, state) {
         final ticket = state.extra as Ticket?;
         if (ticket == null) {
-          return const Scaffold(
-            body: Center(child: Text('Ticket not found')),
-          );
+          return const Scaffold(body: Center(child: Text('Ticket not found')));
         }
         return TravelTicketView(ticket: ticket);
       },

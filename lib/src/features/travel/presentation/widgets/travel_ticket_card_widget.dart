@@ -11,11 +11,13 @@ class TravelTicketCardWidget extends StatelessWidget {
   const TravelTicketCardWidget({
     required this.ticket,
     this.onTicketDeleted,
+    this.isHighlighted = false,
     super.key,
   });
 
   final Ticket ticket;
   final VoidCallback? onTicketDeleted;
+  final bool isHighlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,18 @@ class TravelTicketCardWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
+        border: isHighlighted
+            ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+            : null,
         boxShadow: [
+          if (isHighlighted)
+            BoxShadow(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+              blurRadius: 12,
+              spreadRadius: 2,
+            ),
           BoxShadow(
             color: Theme.of(
               context,
@@ -125,9 +138,7 @@ class TravelTicketCardWidget extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: 0.05,
-                            ),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -186,9 +197,7 @@ class TravelTicketCardWidget extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: 0.05,
-                            ),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),

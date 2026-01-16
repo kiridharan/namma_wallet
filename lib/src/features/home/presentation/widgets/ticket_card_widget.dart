@@ -6,10 +6,12 @@ import 'package:namma_wallet/src/common/helper/date_time_converter.dart';
 class EventTicketCardWidget extends StatelessWidget {
   const EventTicketCardWidget({
     required this.ticket,
+    this.isHighlighted = false,
     super.key,
   });
 
   final Ticket ticket;
+  final bool isHighlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,21 @@ class EventTicketCardWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: Theme.of(context).colorScheme.surface,
+          border: isHighlighted
+              ? Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                )
+              : null,
           boxShadow: [
+            if (isHighlighted)
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
             BoxShadow(
               color: Theme.of(
                 context,
@@ -112,9 +128,7 @@ class EventTicketCardWidget extends StatelessWidget {
             //* Address
             Text(
               ticket.location,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
